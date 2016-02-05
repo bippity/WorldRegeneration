@@ -87,13 +87,13 @@ namespace WorldRegeneration
                 TShockAPI.Commands.ChatCommands.Add(c);
             };
 
-            Add(new Command(Permissions.immunetoban, Commands.SaveWorld, "saveworld")
+            Add(new Command(Permissions.saveworld, Commands.SaveWorld, "saveworld")
             {
                 AllowServer = true,
                 HelpText = "Save the world and its contents."
             });
 
-            Add(new Command(Permissions.immunetoban, Commands.LoadWorld, "loadworld")
+            Add(new Command(Permissions.loadworld, Commands.LoadWorld, "loadworld")
             {
                 AllowServer = true,
                 HelpText = "Load the world and its contents."
