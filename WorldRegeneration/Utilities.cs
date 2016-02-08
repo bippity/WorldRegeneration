@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -129,100 +130,103 @@ namespace WorldRegeneration
 
         public static void LoadWorldSection(string path)
         {
-            using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
+            Task.Factory.StartNew(() =>
             {
-                Main.worldSurface = reader.ReadDouble();
-                Main.rockLayer = reader.ReadDouble();
-                Main.dungeonX = reader.ReadInt32();
-                Main.dungeonY = reader.ReadInt32();
-                WorldGen.crimson = reader.ReadBoolean();
-
-                reader.ReadInt32();
-                reader.ReadInt32();
-
-                int x = 0;
-                int y = 0;
-
-                int x2 = reader.ReadInt32();
-                int y2 = reader.ReadInt32();
-
-                for (int i = x; i <= x2; i++)
+                using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
                 {
-                    for (int j = y; j <= y2; j++)
+                    Main.worldSurface = reader.ReadDouble();
+                    Main.rockLayer = reader.ReadDouble();
+                    Main.dungeonX = reader.ReadInt32();
+                    Main.dungeonY = reader.ReadInt32();
+                    WorldGen.crimson = reader.ReadBoolean();
+
+                    reader.ReadInt32();
+                    reader.ReadInt32();
+
+                    int x = 0;
+                    int y = 0;
+
+                    int x2 = reader.ReadInt32();
+                    int y2 = reader.ReadInt32();
+
+                    for (int i = x; i <= x2; i++)
                     {
-                        Tile tile = reader.ReadTile();
-                        if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
+                        for (int j = y; j <= y2; j++)
                         {
-                            if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+                            Tile tile = reader.ReadTile();
+                            if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
                             {
+                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    Main.tile[i, j] = tile; // Paste Tiles
+                                }
+                            }
+                        }
+                    }
+                    ResetSection(x, y, x2, y2);
+                    TSPlayer.All.SendInfoMessage("Tile Data Loaded...");
+
+                    int totalChests = reader.ReadInt32();
+                    int chests = 0;
+                    int index = 0;
+                    for (int a = 0; a < totalChests; a++)
+                    {
+                        Chest chest = reader.ReadChest();
+                        for (int c = index; c < 1000; c++)
+                        {
+                            if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                            {
+                                break;
+                            }
+                            else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
+                            {
+                                index++;
                                 continue;
                             }
                             else
                             {
-                                Main.tile[i, j] = tile; // Paste Tiles
+                                Main.chest[c] = chest;
+                                index++;
+                                chests++;
+                                break;
                             }
                         }
                     }
-                }
-                ResetSection(x, y, x2, y2);
-                TSPlayer.All.SendInfoMessage("Tile Data Loaded...");
+                    TSPlayer.All.SendInfoMessage("{0} of {1} Chest Data Loaded...", chests, totalChests);
 
-                int totalChests = reader.ReadInt32();
-                int chests = 0;
-                int index = 0;
-                for (int a = 0; a < totalChests; a++)
-                {
-                    Chest chest = reader.ReadChest();
-                    for (int c = index; c < 1000; c++)
+                    int totalSigns = reader.ReadInt32();
+                    int signs = 0;
+                    index = 0;
+                    for (int a = 0; a < totalSigns; a++)
                     {
-                        if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                        Sign sign = reader.ReadSign();
+                        for (int s = index; s < 1000; s++)
                         {
-                            break;
-                        }
-                        else if(Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
-                        {
-                            index++;
-                            continue;
-                        }
-                        else
-                        {
-                            Main.chest[c] = chest;
-                            index++;
-                            chests++;
-                            break;
+                            if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z > 99))
+                            {
+                                break;
+                            }
+                            else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z > 99))
+                            {
+                                index++;
+                                continue;
+                            }
+                            else
+                            {
+                                Main.sign[s] = sign;
+                                index++;
+                                signs++;
+                                break;
+                            }
                         }
                     }
+                    TSPlayer.All.SendInfoMessage("{0} of {1} Signs Data Loaded...", signs, totalSigns);
                 }
-                TSPlayer.All.SendInfoMessage("{0} of {1} Chest Data Loaded...", chests, totalChests);
-
-                int totalSigns = reader.ReadInt32();
-                int signs = 0;
-                index = 0;
-                for (int a = 0; a < totalSigns; a++)
-                {
-                    Sign sign = reader.ReadSign();
-                    for (int s = index; s < 1000; s++)
-                    {
-                        if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z > 99))
-                        {
-                            break;
-                        }
-                        else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z > 99))
-                        {
-                            index++;
-                            continue;
-                        }
-                        else
-                        {
-                            Main.sign[s] = sign;
-                            index++;
-                            signs++;
-                            break;
-                        }
-                    }
-                }
-                TSPlayer.All.SendInfoMessage("{0} of {1} Signs Data Loaded...", signs, totalSigns);
-            }
+            });
         }
 
         public static Tile ReadTile(this BinaryReader reader)
@@ -297,98 +301,101 @@ namespace WorldRegeneration
 
         public static void RegenerateWorld(string path)
         {
-            using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
+            Task.Factory.StartNew(() =>
             {
-                Main.worldSurface = reader.ReadDouble();
-                Main.rockLayer = reader.ReadDouble();
-                Main.dungeonX = reader.ReadInt32();
-                Main.dungeonY = reader.ReadInt32();
-                WorldGen.crimson = reader.ReadBoolean();
-
-                reader.ReadInt32();
-                reader.ReadInt32();
-
-                int x = 0;
-                int y = 0;
-
-                int x2 = reader.ReadInt32();
-                int y2 = reader.ReadInt32();
-
-                for (int i = x; i <= x2; i++)
+                using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
                 {
-                    for (int j = y; j <= y2; j++)
+                    Main.worldSurface = reader.ReadDouble();
+                    Main.rockLayer = reader.ReadDouble();
+                    Main.dungeonX = reader.ReadInt32();
+                    Main.dungeonY = reader.ReadInt32();
+                    WorldGen.crimson = reader.ReadBoolean();
+
+                    reader.ReadInt32();
+                    reader.ReadInt32();
+
+                    int x = 0;
+                    int y = 0;
+
+                    int x2 = reader.ReadInt32();
+                    int y2 = reader.ReadInt32();
+
+                    for (int i = x; i <= x2; i++)
                     {
-                        Tile tile = reader.ReadTile();
-                        if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
+                        for (int j = y; j <= y2; j++)
                         {
-                            if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+                            Tile tile = reader.ReadTile();
+                            if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
                             {
+                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    Main.tile[i, j] = tile;
+                                }
+                            }
+                        }
+                    }
+                    ResetSection(x, y, x2, y2);
+
+                    int totalChests = reader.ReadInt32();
+                    int chests = 0;
+                    int index = 0;
+                    for (int a = 0; a < totalChests; a++)
+                    {
+                        Chest chest = reader.ReadChest();
+                        for (int c = index; c < 1000; c++)
+                        {
+                            if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                            {
+                                break;
+                            }
+                            else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
+                            {
+                                index++;
                                 continue;
                             }
                             else
                             {
-                                Main.tile[i, j] = tile;
+                                Main.chest[c] = chest;
+                                index++;
+                                chests++;
+                                break;
                             }
                         }
                     }
-                }
-                ResetSection(x, y, x2, y2);
 
-                int totalChests = reader.ReadInt32();
-                int chests = 0;
-                int index = 0;
-                for (int a = 0; a < totalChests; a++)
-                {
-                    Chest chest = reader.ReadChest();
-                    for (int c = index; c < 1000; c++)
+                    int totalSigns = reader.ReadInt32();
+                    int signs = 0;
+                    index = 0;
+                    for (int a = 0; a < totalSigns; a++)
                     {
-                        if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                        Sign sign = reader.ReadSign();
+                        for (int s = index; s < 1000; s++)
                         {
-                            break;
-                        }
-                        else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
-                        {
-                            index++;
-                            continue;
-                        }
-                        else
-                        {
-                            Main.chest[c] = chest;
-                            index++;
-                            chests++;
-                            break;
+                            if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z > 99))
+                            {
+                                break;
+                            }
+                            else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z > 99))
+                            {
+                                index++;
+                                continue;
+                            }
+                            else
+                            {
+                                Main.sign[s] = sign;
+                                index++;
+                                signs++;
+                                break;
+                            }
                         }
                     }
+                    TSPlayer.All.SendMessage(string.Format("The world has regenerated..."), 50, 255, 130);
                 }
-
-                int totalSigns = reader.ReadInt32();
-                int signs = 0;
-                index = 0;
-                for (int a = 0; a < totalSigns; a++)
-                {
-                    Sign sign = reader.ReadSign();
-                    for (int s = index; s < 1000; s++)
-                    {
-                        if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z > 99))
-                        {
-                            break;
-                        }
-                        else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z > 99))
-                        {
-                            index++;
-                            continue;
-                        }
-                        else
-                        {
-                            Main.sign[s] = sign;
-                            index++;
-                            signs++;
-                            break;
-                        }
-                    }
-                }
-                TSPlayer.All.SendMessage(string.Format("The world has regenerated..."), 50, 255, 130);
-            }
+            });
         }
     }
 }
