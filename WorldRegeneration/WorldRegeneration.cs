@@ -34,7 +34,7 @@ namespace WorldRegeneration
 
         public static ConfigFile WorldRegenConfig { get; set; }
 
-        private static DateTime WorldRegenCheck = DateTime.UtcNow;
+        public static DateTime WorldRegenCheck = DateTime.UtcNow;
         private static bool hasWorldRegenerated = false;
 
         public WorldRegeneration(Main game)
@@ -59,27 +59,14 @@ namespace WorldRegeneration
             {
                 ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
-
-                PlayerHooks.PlayerCommand -= OnPlayerCommand;
             }
             base.Dispose(disposing);
-        }
-
-        private void OnPlayerCommand(PlayerCommandEventArgs args)
-        {
-            if (args.Handled || args.Player == null)
-                return;
-
-            Command command = args.CommandList.FirstOrDefault();
-            if (command == null || (command.Permissions.Any() && !command.Permissions.Any(s => args.Player.Group.HasPermission(s))))
-                return;
         }
 
         private void OnInitialize(EventArgs args)
         {
             Directory.CreateDirectory("worldregen");
 
-            PlayerHooks.PlayerCommand -= OnPlayerCommand;
             #region Commands
             Action<Command> Add = c =>
             {
@@ -97,6 +84,12 @@ namespace WorldRegeneration
             {
                 AllowServer = true,
                 HelpText = "Load the world and its contents."
+            });
+
+            Add(new Command(Permissions.worldregen, Commands.WorldRegen, "worldregen")
+            {
+                AllowServer = true,
+                HelpText = "Various sub-commands for world regeneration."
             });
             #endregion
         }
