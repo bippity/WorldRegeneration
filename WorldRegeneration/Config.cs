@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TShockAPI;
 
@@ -12,6 +8,7 @@ namespace WorldRegeneration
     public class ConfigFile
     {
         public int RegenerationInterval = 21600;
+        public bool IgnoreChests = false;
 
         public static ConfigFile Read(string path)
         {
