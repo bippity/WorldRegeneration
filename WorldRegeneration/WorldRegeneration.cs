@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Timers;
 using System.IO;
-using System.Collections.Generic;
-using MySql.Data.MySqlClient;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
-using TShockAPI.DB;
 using TShockAPI.Hooks;
 
 namespace WorldRegeneration
@@ -34,7 +32,10 @@ namespace WorldRegeneration
 
         public static ConfigFile WorldRegenConfig { get; set; }
 
+        static readonly Timer RegenTimer = new Timer(1000);
+
         public static DateTime WorldRegenCheck = DateTime.UtcNow;
+        public static int WorldRegenCountdown = 5;
         private static bool hasWorldRegenerated = false;
 
         public WorldRegeneration(Main game)
@@ -49,7 +50,7 @@ namespace WorldRegeneration
             ConfigFile.SetupConfig();
 
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
+            GeneralHooks.ReloadEvent += OnReload;
             GetDataHandlers.InitGetDataHandler();
         }
 
@@ -57,8 +58,10 @@ namespace WorldRegeneration
         {
             if (disposing)
             {
-                ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
+                GeneralHooks.ReloadEvent -= OnReload;
+                RegenTimer.Elapsed += OnWorldRegeneration;
+                RegenTimer.Stop();
             }
             base.Dispose(disposing);
         }
@@ -92,14 +95,20 @@ namespace WorldRegeneration
                 HelpText = "Various sub-commands for world regeneration."
             });
             #endregion
+
+            RegenTimer.Elapsed += OnWorldRegeneration;
+            RegenTimer.Start();
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnWorldRegeneration(object Sender, EventArgs args)
         {
-            if ((DateTime.UtcNow - WorldRegenCheck).TotalSeconds >= WorldRegenConfig.RegenerationInterval - 60 && !hasWorldRegenerated)
+            if ((DateTime.UtcNow - WorldRegenCheck).TotalMinutes >= (WorldRegenConfig.RegenerationInterval / 60) - 6 && !hasWorldRegenerated)
             {
-                TSPlayer.All.SendMessage(string.Format("The world will regenerate in 1 Minute(s)."), 50, 255, 130);
-                hasWorldRegenerated = true;
+                TimeSpan RegenSpan = WorldRegenCheck.AddSeconds(WorldRegenConfig.RegenerationInterval) - DateTime.UtcNow;
+                if(RegenSpan.Minutes > 0 && RegenSpan.Minutes < 6 && RegenSpan.Seconds == 0)
+                    TSPlayer.All.SendMessage(string.Format("The world will regenerate in {0} minute{1}.", RegenSpan.Minutes, RegenSpan.Minutes == 1 ? "" : "s"), 50, 255, 130);
+                if (RegenSpan.Minutes == 0)
+                    hasWorldRegenerated = true;
             }
             if ((DateTime.UtcNow - WorldRegenCheck).TotalSeconds >= WorldRegenConfig.RegenerationInterval)
             {
@@ -114,6 +123,21 @@ namespace WorldRegeneration
                     Utilities.RegenerateWorld(worldPath);
                     hasWorldRegenerated = false;
                 }
+            }
+        }
+
+        public void OnReload(ReloadEventArgs args)
+        {
+            try
+            {
+                WorldRegenConfig = ConfigFile.Read(ConfigFile.ConfigPath);
+                args.Player.SendSuccessMessage("Successfully reloaded WorldRegeneration config!");
+            }
+            catch (Exception ex)
+            {
+                WorldRegenConfig = new ConfigFile();
+                args.Player.SendWarningMessage("An exception occurred while parsing the WorldRegeneration config! Check logs for more details!");
+                TShock.Log.Error("[WorldRegeneration] An exception occurred while parsing tbe WorldRegeneration config!\n{0}".SFormat(ex.ToString()));
             }
         }
     }
