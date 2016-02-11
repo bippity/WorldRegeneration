@@ -2,4 +2,3 @@ C:\Users\Marcus101RR\Desktop\TShock\WorldRegeneration\WorldRegeneration\bin\Rele
 C:\Users\Marcus101RR\Desktop\TShock\WorldRegeneration\WorldRegeneration\bin\Release\WorldRegeneration.pdb
 C:\Users\Marcus101RR\Desktop\TShock\WorldRegeneration\WorldRegeneration\obj\Release\WorldRegeneration.dll
 C:\Users\Marcus101RR\Desktop\TShock\WorldRegeneration\WorldRegeneration\obj\Release\WorldRegeneration.pdb
-C:\Users\Marcus101RR\Desktop\TShock\WorldRegeneration\WorldRegeneration\obj\Release\WorldRegeneration.csprojResolveAssemblyReference.cache
