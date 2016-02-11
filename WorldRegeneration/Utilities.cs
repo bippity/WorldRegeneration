@@ -170,33 +170,46 @@ namespace WorldRegeneration
                     ResetSection(x, y, x2, y2);
                     TSPlayer.All.SendInfoMessage("Tile Data Loaded...");
 
+                    #region Chest Data
                     int totalChests = reader.ReadInt32();
                     int chests = 0;
                     int index = 0;
-                    for (int a = 0; a < totalChests; a++)
+                    if (!WorldRegeneration.WorldRegenConfig.IgnoreChests)
                     {
-                        Chest chest = reader.ReadChest();
-                        for (int c = index; c < 1000; c++)
+                        for (int a = 0; a < totalChests; a++)
                         {
-                            if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                            Chest chest = reader.ReadChest();
+                            for (int c = index; c < 1000; c++)
                             {
-                                break;
-                            }
-                            else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
-                            {
-                                index++;
-                                continue;
-                            }
-                            else
-                            {
-                                Main.chest[c] = chest;
-                                index++;
-                                chests++;
-                                break;
+                                if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                                {
+                                    break;
+                                }
+                                else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
+                                {
+                                    index++;
+                                    continue;
+                                }
+                                else
+                                {
+                                    Main.chest[c] = chest;
+                                    index++;
+                                    chests++;
+                                    break;
+                                }
                             }
                         }
+                        TSPlayer.All.SendInfoMessage("{0} of {1} Chest Data Loaded...", chests, totalChests);
                     }
-                    TSPlayer.All.SendInfoMessage("{0} of {1} Chest Data Loaded...", chests, totalChests);
+                    else
+                    {
+                        for (int a = 0; a < totalChests; a++)
+                        {
+                            reader.ReadChest();
+                        }
+                        TSPlayer.All.SendInfoMessage("{0} Chest Data Ignored...", totalChests);
+                    }
+                    #endregion
 
                     int totalSigns = reader.ReadInt32();
                     int signs = 0;
@@ -340,32 +353,45 @@ namespace WorldRegeneration
                     }
                     ResetSection(x, y, x2, y2);
 
+                    #region Chest Data
                     int totalChests = reader.ReadInt32();
                     int chests = 0;
                     int index = 0;
-                    for (int a = 0; a < totalChests; a++)
+                    if (!WorldRegeneration.WorldRegenConfig.IgnoreChests)
                     {
-                        Chest chest = reader.ReadChest();
-                        for (int c = index; c < 1000; c++)
+                        for (int a = 0; a < totalChests; a++)
                         {
-                            if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                            Chest chest = reader.ReadChest();
+                            for (int c = index; c < 1000; c++)
                             {
-                                break;
-                            }
-                            else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
-                            {
-                                index++;
-                                continue;
-                            }
-                            else
-                            {
-                                Main.chest[c] = chest;
-                                index++;
-                                chests++;
-                                break;
+                                if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                                {
+                                    break;
+                                }
+                                else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
+                                {
+                                    index++;
+                                    continue;
+                                }
+                                else
+                                {
+                                    Main.chest[c] = chest;
+                                    index++;
+                                    chests++;
+                                    break;
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        for (int a = 0; a < totalChests; a++)
+                        {
+                            reader.ReadChest();
+                        }
+                        TSPlayer.All.SendInfoMessage("{1} Chest Data Ignored...", totalChests);
+                    }
+                    #endregion
 
                     int totalSigns = reader.ReadInt32();
                     int signs = 0;
