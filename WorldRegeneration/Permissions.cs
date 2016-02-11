@@ -9,7 +9,7 @@ namespace WorldRegeneration
 
         [Description("Load a (.twd) terraria world data file.")]
         public static readonly string loadworld = "worldregen.main.load";
-        
+
         [Description("Allows various sub-commands.")]
         public static readonly string worldregen = "worldregen.main.info";
     }
