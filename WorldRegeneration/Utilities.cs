@@ -389,7 +389,6 @@ namespace WorldRegeneration
                         {
                             reader.ReadChest();
                         }
-                        TSPlayer.All.SendInfoMessage("{1} Chest Data Ignored...", totalChests);
                     }
                     #endregion
 

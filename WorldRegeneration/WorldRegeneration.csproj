@@ -31,15 +31,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Data.Sqlite">
-      <HintPath>ref\Mono.Data.Sqlite.dll</HintPath>
+      <HintPath>..\..\1 - References\Mono.Data.Sqlite.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MySql.Data">
-      <HintPath>ref\MySql.Data.dll</HintPath>
+      <HintPath>..\..\1 - References\MySql.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>ref\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\1 - References\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -51,11 +51,11 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="TerrariaServer">
-      <HintPath>ref\TerrariaServer.exe</HintPath>
+      <HintPath>..\..\1 - References\TerrariaServer.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TShockAPI">
-      <HintPath>ref\TShockAPI.dll</HintPath>
+      <HintPath>..\..\1 - References\TShockAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
