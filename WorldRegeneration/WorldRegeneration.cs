@@ -10,7 +10,11 @@ using TShockAPI.Hooks;
 
 namespace WorldRegeneration
 {
+<<<<<<< HEAD
     [ApiVersion(1, 24)]
+=======
+    [ApiVersion(1, 23)]
+>>>>>>> origin/master
     public class WorldRegeneration : TerrariaPlugin
     {
         public override Version Version
