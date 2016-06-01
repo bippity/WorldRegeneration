@@ -10,7 +10,7 @@ using TShockAPI.Hooks;
 
 namespace WorldRegeneration
 {
-    [ApiVersion(1, 22)]
+    [ApiVersion(1, 24)]
     public class WorldRegeneration : TerrariaPlugin
     {
         public override Version Version
@@ -60,7 +60,7 @@ namespace WorldRegeneration
             {
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
                 GeneralHooks.ReloadEvent -= OnReload;
-                RegenTimer.Elapsed += OnWorldRegeneration;
+                RegenTimer.Elapsed -= OnWorldRegeneration;
                 RegenTimer.Stop();
             }
             base.Dispose(disposing);
