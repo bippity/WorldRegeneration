@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using TShockAPI;
 using TShockAPI.DB;
 
@@ -41,6 +42,7 @@ namespace WorldRegeneration
                 }
                 TSPlayer.All.SendInfoMessage("Tile Data Saved...");
 
+                #region Chest Data
                 int totalChests = 0;
                 for (int i = 0; i < 1000; i++)
                 {
@@ -59,7 +61,9 @@ namespace WorldRegeneration
                         writer.WriteChest(chest);
                 }
                 TSPlayer.All.SendInfoMessage("{0} Chest Data Saved...", totalChests);
+                #endregion
 
+                #region Sign Data
                 int totalSigns = 0;
                 for (int i = 0; i < 1000; i++)
                 {
@@ -78,6 +82,16 @@ namespace WorldRegeneration
                         writer.WriteSign(sign);
                 }
                 TSPlayer.All.SendInfoMessage("{0} Sign Data Saved...", totalSigns);
+                #endregion
+
+                #region Tile Entitity Data
+                writer.Write(TileEntity.ByID.Count);
+                foreach (KeyValuePair<int, TileEntity> byID in TileEntity.ByID)
+                {
+                    TileEntity.Write(writer, byID.Value);
+                }
+                TSPlayer.All.SendInfoMessage("{0} Tile Entitity Data Saved...", Terraria.DataStructures.TileEntity.ByID.Count);
+                #endregion
             }
         }
 
@@ -211,6 +225,7 @@ namespace WorldRegeneration
                     }
                     #endregion
 
+                    #region Sign Data
                     int totalSigns = reader.ReadInt32();
                     int signs = 0;
                     index = 0;
@@ -238,6 +253,23 @@ namespace WorldRegeneration
                         }
                     }
                     TSPlayer.All.SendInfoMessage("{0} of {1} Signs Data Loaded...", signs, totalSigns);
+                    #endregion
+
+                    #region Tile Entitity Data
+                    int totalTileEntities = reader.ReadInt32();
+                    int num1 = 0;
+
+                    for (int i = 0; i < totalTileEntities; i++)
+                    {
+                        TileEntity tileEntity = TileEntity.Read(reader);
+                        tileEntity.ID = TileEntity.AssignNewID();
+                        TileEntity.ByID[tileEntity.ID] = tileEntity;
+                        TileEntity.ByPosition[tileEntity.Position] = tileEntity;
+                        num1++;
+                    }
+                    TileEntity.TileEntitiesNextID = totalTileEntities;
+                    TSPlayer.All.SendInfoMessage("{0} of {1} Tile Entity Data Loaded...", num1, totalTileEntities);
+                    #endregion
                 }
             });
         }
@@ -389,10 +421,10 @@ namespace WorldRegeneration
                         {
                             reader.ReadChest();
                         }
-                        TSPlayer.All.SendInfoMessage("{1} Chest Data Ignored...", totalChests);
                     }
                     #endregion
 
+                    #region Sign Data
                     int totalSigns = reader.ReadInt32();
                     int signs = 0;
                     index = 0;
@@ -419,6 +451,21 @@ namespace WorldRegeneration
                             }
                         }
                     }
+                    #endregion
+
+                    #region Tile Entitity Data
+                    int totalTileEntities = reader.ReadInt32();
+
+                    for (int i = 0; i < totalTileEntities; i++)
+                    {
+                        TileEntity tileEntity = TileEntity.Read(reader);
+                        tileEntity.ID = TileEntity.AssignNewID();
+                        TileEntity.ByID[tileEntity.ID] = tileEntity;
+                        TileEntity.ByPosition[tileEntity.Position] = tileEntity;
+                    }
+                    TileEntity.TileEntitiesNextID = totalTileEntities;
+                    #endregion
+
                     TSPlayer.All.SendMessage(string.Format("The world has regenerated..."), 50, 255, 130);
                 }
             });
