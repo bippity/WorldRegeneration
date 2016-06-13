@@ -258,16 +258,31 @@ namespace WorldRegeneration
                     #region Tile Entitity Data
                     int totalTileEntities = reader.ReadInt32();
                     int num1 = 0;
-
                     for (int i = 0; i < totalTileEntities; i++)
                     {
                         TileEntity tileEntity = TileEntity.Read(reader);
-                        tileEntity.ID = TileEntity.AssignNewID();
-                        TileEntity.ByID[tileEntity.ID] = tileEntity;
-                        TileEntity.ByPosition[tileEntity.Position] = tileEntity;
-                        num1++;
+                        for (int j = 0; j < 1000; j++)
+                        {
+                            TileEntity entityUsed;
+                            if (TileEntity.ByID.TryGetValue(j, out entityUsed))
+                            {
+                                if (entityUsed.Position == tileEntity.Position)
+                                {
+                                    break;
+                                }
+                                continue;
+                            }
+                            else
+                            {
+                                tileEntity.ID = j;
+                                TileEntity.ByID[tileEntity.ID] = tileEntity;
+                                TileEntity.ByPosition[tileEntity.Position] = tileEntity;
+                                TileEntity.TileEntitiesNextID = j++;
+                                num1++;
+                                break;
+                            }
+                        }
                     }
-                    TileEntity.TileEntitiesNextID = totalTileEntities;
                     TSPlayer.All.SendInfoMessage("{0} of {1} Tile Entity Data Loaded...", num1, totalTileEntities);
                     #endregion
                 }
@@ -459,14 +474,36 @@ namespace WorldRegeneration
                     for (int i = 0; i < totalTileEntities; i++)
                     {
                         TileEntity tileEntity = TileEntity.Read(reader);
-                        tileEntity.ID = TileEntity.AssignNewID();
-                        TileEntity.ByID[tileEntity.ID] = tileEntity;
-                        TileEntity.ByPosition[tileEntity.Position] = tileEntity;
+                        for (int j = 0; j < 1000; j++)
+                        {
+                            TileEntity entityUsed;
+                            if (TileEntity.ByID.TryGetValue(j, out entityUsed))
+                            {
+                                if (entityUsed.Position == tileEntity.Position)
+                                {
+                                    break;
+                                }
+                                continue;
+                            }
+                            else
+                            {
+                                tileEntity.ID = j;
+                                TileEntity.ByID[tileEntity.ID] = tileEntity;
+                                TileEntity.ByPosition[tileEntity.Position] = tileEntity;
+                                break;
+                            }
+                        }
                     }
-                    TileEntity.TileEntitiesNextID = totalTileEntities;
                     #endregion
 
                     TSPlayer.All.SendMessage(string.Format("The world has regenerated..."), 50, 255, 130);
+
+                    if (WorldRegeneration.WorldRegenConfig.UseInfiniteChests)
+                    {
+                        TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/convchests");
+                        System.Threading.Thread.Sleep(10000);
+                        TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/prunechests,");
+                    }
                 }
             });
         }
