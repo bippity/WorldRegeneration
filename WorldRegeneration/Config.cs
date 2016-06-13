@@ -9,6 +9,7 @@ namespace WorldRegeneration
     {
         public int RegenerationInterval = 21600;
         public bool IgnoreChests = false;
+        public bool UseInfiniteChests = false;
 
         public static ConfigFile Read(string path)
         {
