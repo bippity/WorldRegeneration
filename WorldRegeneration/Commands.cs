@@ -45,7 +45,7 @@ namespace WorldRegeneration
                     break;
                 case "force":
                         args.Player.SendInfoMessage("You forced World Regeneration.");
-                        WorldRegeneration.WorldRegenCheck = DateTime.UtcNow.AddSeconds(-WorldRegeneration.WorldRegenConfig.RegenerationInterval + 360);
+                        WorldRegeneration.WorldRegenCheck = DateTime.UtcNow.AddSeconds(-WorldRegeneration.WorldRegenConfig.RegenerationInterval + 301);
                     break;
                 default:
                     {
