@@ -284,6 +284,17 @@ namespace WorldRegeneration
                         }
                     }
                     TSPlayer.All.SendInfoMessage("{0} of {1} Tile Entity Data Loaded...", num1, totalTileEntities);
+
+                    if (WorldRegeneration.WorldRegenConfig.UseInfiniteChests)
+                    {
+                        TSPlayer.All.SendInfoMessage("Using InfiniteChests Commands...");
+                        TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/convchests");
+                        System.Threading.Thread.Sleep(10000);
+                        TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/prunechests,");
+                    }
+
+                    TSPlayer.All.SendInfoMessage("Successfully regenerated the world.");
+
                     #endregion
                 }
             });
