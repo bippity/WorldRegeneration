@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Terraria;
 using TShockAPI;
 
@@ -40,12 +42,32 @@ namespace WorldRegeneration
             switch (cmd)
             {
                 case "time":
-                        TimeSpan NextRegen = WorldRegeneration.WorldRegenCheck - DateTime.UtcNow.AddSeconds(-WorldRegeneration.WorldRegenConfig.RegenerationInterval);
+                        TimeSpan NextRegen = WorldRegeneration.WorldRegenCheck - DateTime.UtcNow.AddSeconds(-WorldRegeneration.Config.RegenerationInterval);
                         args.Player.SendInfoMessage("World Regeneration will be in{0}{1}{2}.", NextRegen.Hours > 0 ? NextRegen.Hours == 1 ? " " + NextRegen.Hours + " Hour" : " " + NextRegen.Hours + " Hours" : "", NextRegen.Minutes > 0 ? NextRegen.Minutes == 1 ? " " + NextRegen.Minutes + " Minute" : " " + NextRegen.Minutes + " Minutes" : "", NextRegen.Seconds > 0 ? NextRegen.Seconds == 1 ? " " + NextRegen.Seconds + " Second" : " " + NextRegen.Seconds + " Seconds" : "");
                     break;
                 case "force":
-                        args.Player.SendInfoMessage("You forced World Regeneration.");
-                        WorldRegeneration.WorldRegenCheck = DateTime.UtcNow.AddSeconds(-WorldRegeneration.WorldRegenConfig.RegenerationInterval + 301);
+                    args.Player.SendInfoMessage("You forced World Regeneration.");
+                    WorldRegeneration.WorldRegenCheck = DateTime.UtcNow.AddSeconds(-WorldRegeneration.Config.RegenerationInterval + 301);
+                    break;
+                case "list":
+                    if (args.Parameters.Count > 2)
+                    {
+                        args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /worldregen list [page]");
+                        return;
+                    }
+
+                    int page;
+                    if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, args.Player, out page))
+                        return;
+
+                    var schematics = from s in Directory.EnumerateFiles("worldregen", "world-*.twd")
+                                     select s.Substring(17, s.Length - 21);
+                    PaginationTools.SendPage(args.Player, page, PaginationTools.BuildLinesFromTerms(schematics),
+                        new PaginationTools.Settings
+                        {
+                            HeaderFormat = "Worlds ({0}/{1}):",
+                            FooterFormat = "Type /worldregen list {0} for more."
+                        });
                     break;
                 default:
                     {

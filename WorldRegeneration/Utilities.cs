@@ -188,7 +188,7 @@ namespace WorldRegeneration
                     int totalChests = reader.ReadInt32();
                     int chests = 0;
                     int index = 0;
-                    if (!WorldRegeneration.WorldRegenConfig.IgnoreChests)
+                    if (!WorldRegeneration.Config.IgnoreChests)
                     {
                         for (int a = 0; a < totalChests; a++)
                         {
@@ -285,7 +285,7 @@ namespace WorldRegeneration
                     }
                     TSPlayer.All.SendInfoMessage("{0} of {1} Tile Entity Data Loaded...", num1, totalTileEntities);
 
-                    if (WorldRegeneration.WorldRegenConfig.UseInfiniteChests)
+                    if (WorldRegeneration.Config.UseInfiniteChests)
                     {
                         TSPlayer.All.SendInfoMessage("Using InfiniteChests Commands...");
                         TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/convchests");
@@ -376,6 +376,13 @@ namespace WorldRegeneration
             {
                 using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
                 {
+                    #region Reset Specific WorldGen Data
+                    WorldGen.altarCount = 0;
+                    WorldGen.oreTier1 = -1;
+                    WorldGen.oreTier2 = -1;
+                    WorldGen.oreTier3 = -1;
+                    #endregion
+
                     Main.worldSurface = reader.ReadDouble();
                     Main.rockLayer = reader.ReadDouble();
                     Main.dungeonX = reader.ReadInt32();
@@ -415,7 +422,7 @@ namespace WorldRegeneration
                     int totalChests = reader.ReadInt32();
                     int chests = 0;
                     int index = 0;
-                    if (!WorldRegeneration.WorldRegenConfig.IgnoreChests)
+                    if (!WorldRegeneration.Config.IgnoreChests)
                     {
                         for (int a = 0; a < totalChests; a++)
                         {
@@ -509,7 +516,7 @@ namespace WorldRegeneration
 
                     TSPlayer.All.SendMessage(string.Format("The world has regenerated..."), 50, 255, 130);
 
-                    if (WorldRegeneration.WorldRegenConfig.UseInfiniteChests)
+                    if (WorldRegeneration.Config.UseInfiniteChests)
                     {
                         TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/convchests");
                         System.Threading.Thread.Sleep(10000);

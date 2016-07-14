@@ -30,10 +30,9 @@ namespace WorldRegeneration
             get { return "Regenerate a world from a save template with chests and sign information."; }
         }
 
-        public static ConfigFile WorldRegenConfig { get; set; }
+        public static Config Config { get; set; }
 
         static readonly Timer RegenTimer = new Timer(1000);
-
         public static DateTime WorldRegenCheck = DateTime.UtcNow;
         public static int WorldRegenCountdown = 5;
         private static bool hasWorldRegenerated = false;
@@ -41,14 +40,11 @@ namespace WorldRegeneration
         public WorldRegeneration(Main game)
 			: base(game)
 		{
-            WorldRegenConfig = new ConfigFile();
             Order = 10;
         }
 
         public override void Initialize()
         {
-            ConfigFile.SetupConfig();
-
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
             GeneralHooks.ReloadEvent += OnReload;
             GetDataHandlers.InitGetDataHandler();
@@ -69,6 +65,13 @@ namespace WorldRegeneration
         private void OnInitialize(EventArgs args)
         {
             Directory.CreateDirectory("worldregen");
+
+            string path = Path.Combine(TShock.SavePath, "WorldRegeneration.json");
+            Config = Config.Read(path);
+            if (!File.Exists(path))
+            {
+                Config.Write(path);
+            }
 
             #region Commands
             Action<Command> Add = c =>
@@ -102,15 +105,15 @@ namespace WorldRegeneration
 
         private void OnWorldRegeneration(object Sender, EventArgs args)
         {
-            if ((DateTime.UtcNow - WorldRegenCheck).TotalMinutes >= (WorldRegenConfig.RegenerationInterval / 60) - 6 && !hasWorldRegenerated)
+            if ((DateTime.UtcNow - WorldRegenCheck).TotalMinutes >= (Config.RegenerationInterval / 60) - 6 && !hasWorldRegenerated)
             {
-                TimeSpan RegenSpan = WorldRegenCheck.AddSeconds(WorldRegenConfig.RegenerationInterval) - DateTime.UtcNow;
+                TimeSpan RegenSpan = WorldRegenCheck.AddSeconds(Config.RegenerationInterval) - DateTime.UtcNow;
                 if(RegenSpan.Minutes > 0 && RegenSpan.Minutes < 6 && RegenSpan.Seconds == 0)
                     TSPlayer.All.SendMessage(string.Format("The world will regenerate in {0} minute{1}.", RegenSpan.Minutes, RegenSpan.Minutes == 1 ? "" : "s"), 50, 255, 130);
                 if (RegenSpan.Minutes == 0)
                     hasWorldRegenerated = true;
             }
-            if ((DateTime.UtcNow - WorldRegenCheck).TotalSeconds >= WorldRegenConfig.RegenerationInterval)
+            if ((DateTime.UtcNow - WorldRegenCheck).TotalSeconds >= Config.RegenerationInterval)
             {
                 WorldRegenCheck = DateTime.UtcNow;
                 var worldData = from s in Directory.EnumerateFiles("worldregen", "world-*.twd")
@@ -128,17 +131,13 @@ namespace WorldRegeneration
 
         public void OnReload(ReloadEventArgs args)
         {
-            try
+            string path = Path.Combine(TShock.SavePath, "WorldRegeneration.json");
+            Config = Config.Read(path);
+            if (!File.Exists(path))
             {
-                WorldRegenConfig = ConfigFile.Read(ConfigFile.ConfigPath);
-                args.Player.SendSuccessMessage("Successfully reloaded WorldRegeneration config!");
+                Config.Write(path);
             }
-            catch (Exception ex)
-            {
-                WorldRegenConfig = new ConfigFile();
-                args.Player.SendWarningMessage("An exception occurred while parsing the WorldRegeneration config! Check logs for more details!");
-                TShock.Log.Error("[WorldRegeneration] An exception occurred while parsing tbe WorldRegeneration config!\n{0}".SFormat(ex.ToString()));
-            }
+            args.Player.SendSuccessMessage("[World Regeneration] Reloaded configuration file and data!");
         }
     }
 }
