@@ -520,7 +520,7 @@ namespace WorldRegeneration
                     {
                         TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/convchests");
                         System.Threading.Thread.Sleep(10000);
-                        TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/prunechests,");
+                        TShockAPI.Commands.HandleCommand(TSPlayer.Server, "/prunechests");
                     }
                 }
             });
