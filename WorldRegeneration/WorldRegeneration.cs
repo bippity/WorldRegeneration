@@ -121,7 +121,8 @@ namespace WorldRegeneration
 
                 if (worldData.Count() > 0)
                 {
-                    int selectedWorld = Main.rand.Next(0, worldData.Count());
+                    Random w = new Random();
+                    int selectedWorld = w.Next(0, worldData.Count()-1);
                     string worldPath = Path.Combine("worldregen", String.Format("world-{0}.twd", worldData.ElementAt(selectedWorld)));
                     Utilities.RegenerateWorld(worldPath);
                     hasWorldRegenerated = false;
