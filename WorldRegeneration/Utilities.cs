@@ -377,7 +377,6 @@ namespace WorldRegeneration
                 using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
                 {
                     #region Reset Specific WorldGen Data
-                    WorldGen.altarCount = 0;
                     WorldGen.oreTier1 = -1;
                     WorldGen.oreTier2 = -1;
                     WorldGen.oreTier3 = -1;
@@ -515,6 +514,47 @@ namespace WorldRegeneration
                     #endregion
 
                     TSPlayer.All.SendMessage(string.Format("The world has regenerated..."), 50, 255, 130);
+
+                    #region WorldGen Reset Data
+                    if (WorldRegeneration.Config.ResetWorldGenStatus)
+                    {
+                        Main.hardMode = false;
+                        NPC.downedBoss1 = false;
+                        NPC.downedBoss2 = false;
+                        NPC.downedBoss3 = false;
+                        NPC.downedQueenBee = false;
+                        NPC.downedSlimeKing = false;
+                        NPC.downedMechBossAny = false;
+                        NPC.downedMechBoss1 = false;
+                        NPC.downedMechBoss2 = false;
+                        NPC.downedMechBoss3 = false;
+                        NPC.downedFishron = false;
+                        NPC.downedMartians = false;
+                        NPC.downedAncientCultist = false;
+                        NPC.downedMoonlord = false;
+                        NPC.downedHalloweenKing = false;
+                        NPC.downedHalloweenTree = false;
+                        NPC.downedChristmasIceQueen = false;
+                        NPC.downedChristmasSantank = false;
+                        NPC.downedChristmasTree = false;
+                        NPC.downedPlantBoss = false;
+                        NPC.savedStylist = false;
+                        NPC.savedGoblin = false;
+                        NPC.savedWizard = false;
+                        NPC.savedMech = false;
+                        NPC.downedGoblins = false;
+                        NPC.downedClown = false;
+                        NPC.downedFrost = false;
+                        NPC.downedPirates = false;
+                        NPC.savedAngler = false;
+                        NPC.downedMartians = false;
+                        NPC.downedGolemBoss = false;
+                        NPC.savedTaxCollector = false;
+                        WorldGen.shadowOrbSmashed = false;
+                        WorldGen.altarCount = 0;
+                        WorldGen.shadowOrbCount = 0;
+                    }
+                    #endregion
 
                     if (WorldRegeneration.Config.UseInfiniteChests)
                     {
