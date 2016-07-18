@@ -35,6 +35,7 @@ namespace WorldRegeneration
         static readonly Timer RegenTimer = new Timer(1000);
         public static DateTime WorldRegenCheck = DateTime.UtcNow;
         public static int WorldRegenCountdown = 5;
+        public static int lastWorldID = 0;
         private static bool hasWorldRegenerated = false;
 
         public WorldRegeneration(Main game)
@@ -126,6 +127,7 @@ namespace WorldRegeneration
                     string worldPath = Path.Combine("worldregen", String.Format("world-{0}.twd", worldData.ElementAt(selectedWorld)));
                     Utilities.RegenerateWorld(worldPath);
                     hasWorldRegenerated = false;
+                    int.TryParse(worldData.ElementAt(selectedWorld), out lastWorldID);
                 }
             }
         }
