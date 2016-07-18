@@ -27,6 +27,7 @@ namespace WorldRegeneration
                     return;
                 }
                 Utilities.LoadWorldSection(schematicPath);
+                int.TryParse(args.Parameters[0], out WorldRegeneration.lastWorldID);
             }
             else
                 args.Player.SendErrorMessage("Proper syntax: /loadworld <worldid>");
@@ -71,6 +72,7 @@ namespace WorldRegeneration
                             HeaderFormat = "Worlds ({0}/{1}):",
                             FooterFormat = "Type /worldregen list {0} for more."
                         });
+                    args.Player.SendInfoMessage("Last World Regenerated: {0}.", WorldRegeneration.lastWorldID);
                     break;
                 default:
                     {
