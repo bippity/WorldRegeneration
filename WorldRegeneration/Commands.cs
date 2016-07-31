@@ -93,7 +93,8 @@ namespace WorldRegeneration
 
                         List<string> lines = new List<string> {
                         "time - Information on next world regeneration.",
-                        "force - Force the world regeneration.",
+                        "force [1] - Force the world regeneration to 5 minutes, or last minute.",
+                        "list - List available world IDs.",
                     };
                         PaginationTools.SendPage(
                             args.Player, pageNumber, lines,
