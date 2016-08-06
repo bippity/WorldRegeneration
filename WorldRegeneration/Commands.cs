@@ -12,7 +12,11 @@ namespace WorldRegeneration
     {
         public static void SaveWorld(CommandArgs args)
         {
-            string schematicPath = Path.Combine("worldregen", String.Format("world-{0}.twd", Main.worldID));
+            string worldid = Main.worldID.ToString();
+            if (args.Parameters.Count > 0)
+                worldid = args.Parameters[0];
+
+            string schematicPath = Path.Combine("worldregen", string.Format("world-{0}.twd", worldid));
             Utilities.SaveWorldSection(0, 0, Main.maxTilesX, Main.maxTilesY, schematicPath);
         }
 
