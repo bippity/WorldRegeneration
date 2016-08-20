@@ -12,6 +12,12 @@ namespace WorldRegeneration
     {
         public static void SaveWorld(CommandArgs args)
         {
+            if(args.Parameters.Count > 1)
+            {
+                args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /saveworld [name]");
+                return;
+            }
+
             string worldid = Main.worldID.ToString();
             if (args.Parameters.Count > 0)
                 worldid = args.Parameters[0];
