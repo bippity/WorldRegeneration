@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using TShockAPI;
 using TShockAPI.DB;
+using OTAPI.Tile;
 
 namespace WorldRegeneration
 {
@@ -95,7 +96,7 @@ namespace WorldRegeneration
             }
         }
 
-        public static void Write(this BinaryWriter writer, Tile tile)
+        public static void Write(this BinaryWriter writer, ITile tile)
         {
             writer.Write(tile.sTileHeader);
             writer.Write(tile.bTileHeader);
