@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using TShockAPI;
 using TShockAPI.DB;
 using OTAPI.Tile;
+using Microsoft.Xna.Framework;
 
 namespace WorldRegeneration
 {
@@ -29,7 +30,16 @@ namespace WorldRegeneration
                 writer.Write(Main.dungeonY);
                 writer.Write(WorldGen.crimson);
 
-                writer.Write(x);
+				writer.Write(WorldGen.CopperTierOre);
+				writer.Write(WorldGen.SilverTierOre);
+				writer.Write(WorldGen.IronTierOre);
+				writer.Write(WorldGen.GoldTierOre);
+
+				writer.Write(WorldGen.oreTier1);
+				writer.Write(WorldGen.oreTier2);
+				writer.Write(WorldGen.oreTier3);
+
+				writer.Write(x);
                 writer.Write(y);
                 writer.Write(x2);
                 writer.Write(y2);
@@ -143,19 +153,28 @@ namespace WorldRegeneration
             writer.Write(sign.y);
         }
 
-        public static void LoadWorldSection(string path)
+        public static void LoadWorldSection(string path, Rectangle rect, bool useRect = false)
         {
             Task.Factory.StartNew(() =>
             {
                 using (var reader = new BinaryReader(new GZipStream(new FileStream(path, FileMode.Open), CompressionMode.Decompress)))
                 {
-                    Main.worldSurface = reader.ReadDouble();
+					Main.worldSurface = reader.ReadDouble();
                     Main.rockLayer = reader.ReadDouble();
                     Main.dungeonX = reader.ReadInt32();
                     Main.dungeonY = reader.ReadInt32();
                     WorldGen.crimson = reader.ReadBoolean();
 
-                    reader.ReadInt32();
+					WorldGen.CopperTierOre = reader.ReadUInt16();
+					WorldGen.SilverTierOre = reader.ReadUInt16();
+					WorldGen.IronTierOre = reader.ReadUInt16();
+					WorldGen.GoldTierOre = reader.ReadUInt16();
+
+					WorldGen.oreTier1 = reader.ReadInt32();
+					WorldGen.oreTier2 = reader.ReadInt32();
+					WorldGen.oreTier3 = reader.ReadInt32();
+
+					reader.ReadInt32();
                     reader.ReadInt32();
 
                     int x = 0;
@@ -170,12 +189,18 @@ namespace WorldRegeneration
                         {
                             Tile tile = reader.ReadTile();
                             if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
-                            {
-                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+							{
+
+								if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
                                 {
                                     continue;
                                 }
-                                else
+								else if (useRect)
+									if (rect.Contains(i, j))
+										Main.tile[i, j] = tile;
+									else
+										continue;
+								else
                                 {
                                     Main.tile[i, j] = tile; // Paste Tiles
                                 }
@@ -184,6 +209,9 @@ namespace WorldRegeneration
                     }
                     ResetSection(x, y, x2, y2);
                     TSPlayer.All.SendInfoMessage("Tile Data Loaded...");
+
+					if (useRect)
+						return;
 
                     #region Chest Data
                     int totalChests = reader.ReadInt32();
@@ -381,15 +409,24 @@ namespace WorldRegeneration
                     WorldGen.oreTier1 = -1;
                     WorldGen.oreTier2 = -1;
                     WorldGen.oreTier3 = -1;
-                    #endregion
+					#endregion
 
-                    Main.worldSurface = reader.ReadDouble();
-                    Main.rockLayer = reader.ReadDouble();
-                    Main.dungeonX = reader.ReadInt32();
-                    Main.dungeonY = reader.ReadInt32();
-                    WorldGen.crimson = reader.ReadBoolean();
+					Main.worldSurface = reader.ReadDouble();
+					Main.rockLayer = reader.ReadDouble();
+					Main.dungeonX = reader.ReadInt32();
+					Main.dungeonY = reader.ReadInt32();
+					WorldGen.crimson = reader.ReadBoolean();
 
-                    reader.ReadInt32();
+					WorldGen.CopperTierOre = reader.ReadUInt16();
+					WorldGen.SilverTierOre = reader.ReadUInt16();
+					WorldGen.IronTierOre = reader.ReadUInt16();
+					WorldGen.GoldTierOre = reader.ReadUInt16();
+
+					WorldGen.oreTier1 = reader.ReadInt32();
+					WorldGen.oreTier2 = reader.ReadInt32();
+					WorldGen.oreTier3 = reader.ReadInt32();
+
+					reader.ReadInt32();
                     reader.ReadInt32();
 
                     int x = 0;
