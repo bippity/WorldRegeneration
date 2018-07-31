@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WorldRegeneration</RootNamespace>
     <AssemblyName>WorldRegeneration</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,11 +50,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\1 - References\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Tshock-refs\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="OTAPI">
-      <HintPath>..\..\1 - References\OTAPI.dll</HintPath>
+      <HintPath>..\..\Tshock-refs\OTAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -61,11 +62,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="TerrariaServer">
-      <HintPath>..\..\1 - References\TerrariaServer.exe</HintPath>
+      <HintPath>..\..\Tshock-refs\TerrariaServer.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TShockAPI">
-      <HintPath>..\..\1 - References\TShockAPI.dll</HintPath>
+      <HintPath>..\..\Tshock-refs\TShockAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

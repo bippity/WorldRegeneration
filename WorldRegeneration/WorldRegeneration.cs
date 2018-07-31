@@ -108,10 +108,13 @@ namespace WorldRegeneration
 				AllowServer = true,
 				HelpText = "Regenerate a portion of the world."
 			});
-			#endregion
+            #endregion
 
-			RegenTimer.Elapsed += OnWorldRegeneration;
-            RegenTimer.Start();
+            if (Config.EnableAutoRegen)
+            {
+                RegenTimer.Elapsed += OnWorldRegeneration;
+                RegenTimer.Start();
+            }
         }
 
         private void OnWorldRegeneration(object Sender, EventArgs args)
@@ -155,6 +158,18 @@ namespace WorldRegeneration
             {
                 Config.Write(path);
             }
+
+            if (Config.EnableAutoRegen)
+            {
+                RegenTimer.Elapsed += OnWorldRegeneration;
+                RegenTimer.Start();
+            }
+            else
+            {
+                RegenTimer.Elapsed -= OnWorldRegeneration;
+                RegenTimer.Stop();
+            }
+
             args.Player.SendSuccessMessage("[World Regeneration] Reloaded configuration file and data!");
         }
 
