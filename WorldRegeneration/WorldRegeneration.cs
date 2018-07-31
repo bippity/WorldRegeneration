@@ -37,20 +37,20 @@ namespace WorldRegeneration
         public static int WorldRegenCountdown = 5;
         public static string lastWorldID = null;
         private static bool hasWorldRegenerated = false;
-		public static string lastPath = "";
-		public static bool awaitingSelection = false;
+        public static string lastPath = "";
+        public static bool awaitingSelection = false;
 
-		public WorldRegeneration(Main game)
-			: base(game)
-		{
+        public WorldRegeneration(Main game)
+            : base(game)
+        {
             Order = 10;
         }
 
         public override void Initialize()
         {
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-			ServerApi.Hooks.NetGetData.Register(this, GetData);
-			GeneralHooks.ReloadEvent += OnReload;
+            ServerApi.Hooks.NetGetData.Register(this, GetData);
+            GeneralHooks.ReloadEvent += OnReload;
             GetDataHandlers.InitGetDataHandler();
         }
 
@@ -59,8 +59,8 @@ namespace WorldRegeneration
             if (disposing)
             {
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
-				ServerApi.Hooks.NetGetData.Deregister(this, GetData);
-				GeneralHooks.ReloadEvent -= OnReload;
+                ServerApi.Hooks.NetGetData.Deregister(this, GetData);
+                GeneralHooks.ReloadEvent -= OnReload;
                 RegenTimer.Elapsed -= OnWorldRegeneration;
                 RegenTimer.Stop();
             }
@@ -103,11 +103,11 @@ namespace WorldRegeneration
                 HelpText = "Various sub-commands for world regeneration."
             });
 
-			Add(new Command(Permissions.worldregen, Commands.RegenWorld, "regenworld")
-			{
-				AllowServer = true,
-				HelpText = "Regenerate a portion of the world."
-			});
+            Add(new Command(Permissions.worldregen, Commands.RegenWorld, "regenworld")
+            {
+                AllowServer = true,
+                HelpText = "Regenerate a portion of the world."
+            });
             #endregion
 
             if (Config.EnableAutoRegen)
@@ -122,9 +122,9 @@ namespace WorldRegeneration
             if ((DateTime.UtcNow - WorldRegenCheck).TotalMinutes >= (Config.RegenerationInterval / 60) - 6 && !hasWorldRegenerated)
             {
                 TimeSpan RegenSpan = WorldRegenCheck.AddSeconds(Config.RegenerationInterval) - DateTime.UtcNow;
-                if(RegenSpan.Minutes > 0 && RegenSpan.Minutes < 6 && RegenSpan.Seconds == 0)
+                if (RegenSpan.Minutes > 0 && RegenSpan.Minutes < 6 && RegenSpan.Seconds == 0)
                 {
-					TSPlayer.All.SendMessage(string.Format("The world will regenerate in {0} minute{1}.", RegenSpan.Minutes, RegenSpan.Minutes == 1 ? "" : "s"), 50, 255, 130);
+                    TSPlayer.All.SendMessage(string.Format("The world will regenerate in {0} minute{1}.", RegenSpan.Minutes, RegenSpan.Minutes == 1 ? "" : "s"), 50, 255, 130);
                     TShock.Log.ConsoleInfo(string.Format("The world will regenerate in {0} minute{1}.", RegenSpan.Minutes, RegenSpan.Minutes == 1 ? "" : "s"));
                 }
                 if (RegenSpan.Minutes == 0)
@@ -139,14 +139,14 @@ namespace WorldRegeneration
                 if (worldData.Count() > 0)
                 {
                     Random w = new Random();
-                    int selectedWorld = w.Next(0, worldData.Count()-1);
+                    int selectedWorld = w.Next(0, worldData.Count() - 1);
                     string worldPath = Path.Combine("worldregen", string.Format("world-{0}.twd", worldData.ElementAt(selectedWorld)));
-					TShock.Log.ConsoleInfo(string.Format("Attempting to regenerate world: {0}.", worldData.ElementAt(selectedWorld)));
-					Utilities.RegenerateWorld(worldPath);
+                    TShock.Log.ConsoleInfo(string.Format("Attempting to regenerate world: {0}.", worldData.ElementAt(selectedWorld)));
+                    Utilities.RegenerateWorld(worldPath);
                     hasWorldRegenerated = false;
-					lastWorldID = worldData.ElementAt(selectedWorld);
+                    lastWorldID = worldData.ElementAt(selectedWorld);
 
-				}
+                }
             }
         }
 
@@ -173,34 +173,34 @@ namespace WorldRegeneration
             args.Player.SendSuccessMessage("[World Regeneration] Reloaded configuration file and data!");
         }
 
-		private void GetData(GetDataEventArgs e)
-		{
-			PacketTypes type = e.MsgID;
-			var player = TShock.Players[e.Msg.whoAmI];
-			if (player == null)
-			{
-				e.Handled = true;
-				return;
-			}
+        private void GetData(GetDataEventArgs e)
+        {
+            PacketTypes type = e.MsgID;
+            var player = TShock.Players[e.Msg.whoAmI];
+            if (player == null)
+            {
+                e.Handled = true;
+                return;
+            }
 
-			if (!player.ConnectionAlive)
-			{
-				e.Handled = true;
-				return;
-			}
+            if (!player.ConnectionAlive)
+            {
+                e.Handled = true;
+                return;
+            }
 
-			using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
-			{
-				try
-				{
-					if (GetDataHandlers.HandlerGetData(type, player, data))
-						e.Handled = true;
-				}
-				catch (Exception ex)
-				{
-					TShock.Log.Error(ex.ToString());
-				}
-			}
-		}
-	}
+            using (var data = new MemoryStream(e.Msg.readBuffer, e.Index, e.Length))
+            {
+                try
+                {
+                    if (GetDataHandlers.HandlerGetData(type, player, data))
+                        e.Handled = true;
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                }
+            }
+        }
+    }
 }
