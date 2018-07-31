@@ -191,7 +191,7 @@ namespace WorldRegeneration
                             if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
                             {
 
-                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                                 {
                                     continue;
                                 }
@@ -224,11 +224,11 @@ namespace WorldRegeneration
                             Chest chest = reader.ReadChest();
                             for (int c = index; c < 1000; c++)
                             {
-                                if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                                if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                                 {
                                     break;
                                 }
-                                else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
+                                else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                                 {
                                     index++;
                                     continue;
@@ -263,11 +263,11 @@ namespace WorldRegeneration
                         Sign sign = reader.ReadSign();
                         for (int s = index; s < 1000; s++)
                         {
-                            if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z > 99))
+                            if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                             {
                                 break;
                             }
-                            else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z > 99))
+                            else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                             {
                                 index++;
                                 continue;
@@ -442,7 +442,7 @@ namespace WorldRegeneration
                             Tile tile = reader.ReadTile();
                             if (i >= 0 && j >= 0 && i < Main.maxTilesX && j < Main.maxTilesY)
                             {
-                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z > 99))
+                                if (TShock.Regions.InAreaRegion(i, j).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                                 {
                                     continue;
                                 }
@@ -466,11 +466,11 @@ namespace WorldRegeneration
                             Chest chest = reader.ReadChest();
                             for (int c = index; c < 1000; c++)
                             {
-                                if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z > 99))
+                                if (TShock.Regions.InAreaRegion(chest.x, chest.y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                                 {
                                     break;
                                 }
-                                else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z > 99))
+                                else if (Main.chest[c] != null && TShock.Regions.InAreaRegion(Main.chest[c].x, Main.chest[c].y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                                 {
                                     index++;
                                     continue;
@@ -503,11 +503,11 @@ namespace WorldRegeneration
                         Sign sign = reader.ReadSign();
                         for (int s = index; s < 1000; s++)
                         {
-                            if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z > 99))
+                            if (TShock.Regions.InAreaRegion(sign.x, sign.y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                             {
                                 break;
                             }
-                            else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z > 99))
+                            else if (Main.sign[s] != null && TShock.Regions.InAreaRegion(Main.sign[s].x, Main.sign[s].y).Any(r => r != null && r.Z >= WorldRegeneration.Config.MaxZRegion))
                             {
                                 index++;
                                 continue;

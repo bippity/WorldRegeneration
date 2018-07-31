@@ -8,6 +8,7 @@ namespace WorldRegeneration
     public class Config
     {
         public bool EnableAutoRegen = false;
+        public int MaxZRegion = 0;
         public int RegenerationInterval = 21600;
         public bool IgnoreChests = false;
         public bool UseInfiniteChests = false;
